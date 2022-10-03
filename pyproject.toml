@@ -1,0 +1,25 @@
+[build-system]
+requires = [
+    "hatchling>=1.10.0",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "bakepy"
+dynamic = [
+    "version",
+]
+description = "BakePy Reporting Library"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Mario Garrido", email = "mg@czacki.com" }
+]
+
+[tool.hatch.version]
+path = "bakepy/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/bakepy",
+]
