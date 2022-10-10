@@ -13,7 +13,7 @@ from bakepy import Report
 
 r = Report()
 
-r.add("Hello!")
+r.add_special("Hello!")
 
 #Adding a DataFrame in a new line.
 
@@ -23,11 +23,11 @@ data = {
 }
 df = pd.DataFrame(data)
 
-r.add(df, caption = "This is a table")
+r.add(df, caption = "This is a table", new_row = True)
 
 #Adding a plot on the same line.
 
-r.add(df.plot(x="cost", y="speed"), caption = "This is a figure")
+r.add(df.plot(x="cost", y="speed").figure, caption = "This is a figure")
 
 #Saving the report
 

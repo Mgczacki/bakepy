@@ -634,7 +634,7 @@ class Report:
         overwrite : bool, default = False
             Set to true if overwriting the current classes.
         """
-        e = self._get_col_from_idx_arg(idx = col_idx, row_idx = row_idx, container_name = container_name)
+        e = self._get_col_from_idx_arg(col_idx = col_idx, row_idx = row_idx, container_name = container_name)
         e.add_cls(vals, overwrite)
 
     def set_col_sty(self, vals, col_idx = None, row_idx = None, container_name = None, overwrite = False):
@@ -654,7 +654,7 @@ class Report:
         overwrite : bool, default = False
             Set to true if overwriting the current styles.
         """
-        e = self._get_col_from_idx_arg(idx = col_idx, row_idx = row_idx, container_name = container_name)
+        e = self._get_col_from_idx_arg(col_idx = col_idx, row_idx = row_idx, container_name = container_name)
         e.add_sty(vals, overwrite)
 
     def add(self,
