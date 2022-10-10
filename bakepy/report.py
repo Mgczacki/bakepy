@@ -695,7 +695,7 @@ class Report:
 
         elements = as_list(elements)
         if new_row and not overwrite:
-            self.add_row(idx = row_idx, container_name = container_name, overwrite = False)
+            self.add_row(row_idx = row_idx, container_name = container_name, overwrite = False)
         if new_col and not overwrite:
             self.add_col(col_idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = False)
         
