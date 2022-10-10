@@ -697,14 +697,14 @@ class Report:
         if new_row and not overwrite:
             self.add_row(idx = row_idx, container_name = container_name, overwrite = False)
         if new_col and not overwrite:
-            self.add_col(idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = False)
+            self.add_col(col_idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = False)
         
         if overwrite:
             #First verify that the column we want to overwrite actually exists.
-            self._get_col_from_idx_arg(idx = col_idx, row_idx = row_idx, container_name = container_name)
-            self.add_col(idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = True)
+            self._get_col_from_idx_arg(col_idx = col_idx, row_idx = row_idx, container_name = container_name)
+            self.add_col(col_idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = True)
 
-        col = self._get_col_from_idx_arg(idx = col_idx, row_idx = row_idx, container_name = container_name)
+        col = self._get_col_from_idx_arg(col_idx = col_idx, row_idx = row_idx, container_name = container_name)
         if size is not None:
             col.size = size
         

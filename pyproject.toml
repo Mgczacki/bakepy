@@ -22,7 +22,15 @@ authors = [
 [tool.hatch.version]
 path = "bakepy/__about__.py"
 
+
+
 [tool.hatch.build.targets.sdist]
-include = [
-    "/bakepy",
+exclude = [
+  "/.github",
+  "/docs",
+  "/examples",
+  "/tests"
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["/bakepy"]
