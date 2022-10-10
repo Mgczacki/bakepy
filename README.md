@@ -8,12 +8,40 @@ Creating a BakePy Report is simple:
 
 ```
 import pandas as pd 
-
+from datetime import datetime as dt
 from bakepy import Report
 
 r = Report()
 
-r.add_special("Hello!")
+r.add_special("markdown",
+f"""
+<h1 class="display-1"> An example BakePy report </h1>
+### {dt.now().strftime("%Y-%m-%d")}
+""")
+
+r.set_col_cls("text-center")
+
+r.add_special("separator", new_row = True)
+
+a = 4
+color = "blue"
+l = ["red", 3, False]
+r.add_special("markdown",
+f"""
+We can add markdown and use the power of Python to mix:
+
+- Variables, like a={a}
+- Conditional formatting, like adding the <span style="color:{color}">color {color}</span>
+- And even directly transform Python objects beyond things like the list: {l}
+""", new_row=True
+)
+
+r.add(<h2> See some examples below! </h2>)
+
+r.add(
+"""
+For example, Pandas Dataframes and Matplotlib Figures
+""", new_col = False)
 
 #Adding a DataFrame in a new line.
 
@@ -25,9 +53,11 @@ df = pd.DataFrame(data)
 
 r.add(df, caption = "This is a table", new_row = True)
 
-#Adding a plot on the same line.
+#Adding a plot.
 
-r.add(df.plot(x="cost", y="speed").figure, caption = "This is a figure")
+r.add(df.plot(x="cost", y="speed").figure, caption = "This is a figure", new_row = True)
+
+r.set_col_cls("d-flex justify-content-center")
 
 #Saving the report
 

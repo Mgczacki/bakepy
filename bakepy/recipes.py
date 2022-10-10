@@ -50,13 +50,13 @@ def _get_separator(classes = ["py-4"], styling = [], visible = True):
     
 @register_format("markdown")
 def _get_markdown(text, classes = [], styling = [], latex=False):
-    import markdown
-    import mdtex2html
 
     if latex:
+        import mdtex2html
         html = mdtex2html.convert(text)
     else:
-       html = markdown.markdown(text)
+        import markdown
+        html = markdown.markdown(text)
             
     cls_str = ""
     if len(classes) > 0:

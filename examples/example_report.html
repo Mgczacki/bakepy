@@ -11,14 +11,14 @@
  <body>
   <div class="container">
    <div class="row justify-content-center pb-5 gx-5">
-    <div class="col">
+    <div class="col text-center">
      <div>
-      <h1>
+      <h1 class="display-1">
        An example BakePy report
       </h1>
-      <h2>
+      <h3>
        2022-10-10
-      </h2>
+      </h3>
      </div>
     </div>
    </div>
@@ -31,12 +31,84 @@
     <div class="col">
      <div>
       <p>
-       <strong>
-        Lorem Ipsum
-       </strong>
-       is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+       We can add markdown and use the power of Python to mix:
       </p>
+      <ul>
+       <li>
+        Variables, like a=4
+       </li>
+       <li>
+        Conditional formatting, like adding the
+        <span style="color:blue">
+         color blue
+        </span>
+       </li>
+       <li>
+        And even directly transform Python objects beyond things like the list: ['red', 3, False]
+       </li>
+      </ul>
      </div>
+    </div>
+    <div class="col">
+     <h2>
+      See some examples below!
+     </h2>
+     For example, Pandas Dataframes and Matplotlib Figures
+    </div>
+   </div>
+   <div class="row justify-content-center pb-5 gx-5">
+    <div class="col">
+     <table border="1" class="dataframe table table-bordered">
+      <thead>
+       <tr style="text-align: left;">
+        <th>
+         cost
+        </th>
+        <th>
+         speed
+        </th>
+       </tr>
+      </thead>
+      <caption class="text-center">
+       This is a table
+      </caption>
+      <tbody>
+       <tr>
+        <td>
+         420
+        </td>
+        <td>
+         50
+        </td>
+       </tr>
+       <tr>
+        <td>
+         380
+        </td>
+        <td>
+         40
+        </td>
+       </tr>
+       <tr>
+        <td>
+         390
+        </td>
+        <td>
+         45
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+   <div class="row justify-content-center pb-5 gx-5">
+    <div class="col d-flex justify-content-center">
+     <figure class="figure">
+      <img class="figure-img img-fluid" src="139947588730208.svg"/>
+      <figcaption class="figure-caption text-center">
+       This is a figure
+      </figcaption>
+     </figure>
     </div>
    </div>
   </div>
