@@ -16,8 +16,11 @@ authors = [
     { name = "Mario Garrido", email = "mg@czacki.com" }
 ]
 
+[project.urls]
+"Homepage" = "https://github.com/mgczacki/bakepy"
+
 [tool.hatch.version]
-path = "bakepy/__init__.py"
+path = "bakepy/__about__.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
