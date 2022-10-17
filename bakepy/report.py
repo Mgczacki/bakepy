@@ -154,7 +154,7 @@ class Report:
                 self.current_container = self.containers[self.current_container_name]
                 logging.info(f"Set current container to {self.current_container_name}.")
         #Verify the current row
-        if self.current_row is None or self.current_row not in self.current_container.elements:
+        if self.current_row is None or not any([self.current_row is x for x in self.current_container.elements]):
             self.current_col = None
             self.current_col_idx = None
             c_items = len(self.current_container.elements)
@@ -168,7 +168,7 @@ class Report:
                 self.current_row = self.current_container.elements[self.current_row_idx]
                 logging.info(f"Set current row to {self.current_row_idx}.")
         #Verify the current column
-        if self.current_col is None or self.current_col not in self.current_row.elements:
+        if self.current_col is None or not any([self.current_col is x for x in self.current_row.elements]):
             c_items = len(self.current_row.elements)
             if c_items == 0:
                 self.current_col = None
@@ -604,7 +604,7 @@ class Report:
         overwrite : bool, default = False
             Set to true if overwriting the current classes.
         """
-        e = self._get_row_from_idx_arg(idx = row_idx, container_name = container_name)
+        e = self._get_row_from_idx_arg(row_idx = row_idx, container_name = container_name)
         e.add_cls(vals, overwrite)
     
     def set_row_sty(self, vals, row_idx = None, container_name = None, overwrite = False):
@@ -622,7 +622,7 @@ class Report:
         overwrite : bool, default = False
             Set to true if overwriting the current styles.
         """
-        e = self._get_row_from_idx_arg(idx = row_idx, container_name = container_name)
+        e = self._get_row_from_idx_arg(row_idx = row_idx, container_name = container_name)
         e.add_sty(vals, overwrite)
 
     def set_col_cls(self, vals, col_idx = None, row_idx = None, container_name = None, overwrite = False):
@@ -692,7 +692,7 @@ class Report:
         new_row : bool, default = True
             If True, the elements will be added in a new row.
         new_col : bool, default = True
-            If True, the elements will be added in a new column.
+            If True, the elements will be added in a new column. Takes precedence over new_row.
         size : int, default = None
             The width of the column to insert.
         copy : bool, default = False
@@ -702,7 +702,7 @@ class Report:
         """
 
         elements = as_list(elements)
-        if new_row and not overwrite:
+        if new_col and new_row and not overwrite:
             self.add_row(row_idx = row_idx, container_name = container_name, overwrite = False)
         if new_col and not overwrite:
             self.add_col(col_idx = col_idx, row_idx = row_idx, container_name = container_name, overwrite = False)
