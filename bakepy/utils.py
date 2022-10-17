@@ -42,7 +42,7 @@ def limit_list_insert_idx(idx, lst, overwrite = False):
 
 def check_is_url(s):
     try:
-        result = urlparse(x)
+        result = urlparse(s)
         return all([result.scheme, result.netloc])
     except:
         return False
