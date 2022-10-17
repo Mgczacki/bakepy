@@ -56,7 +56,7 @@ r.add(df, caption = "This is a table", new_row = True)
 
 #Adding a plot on the same line.
 
-r.add(df.plot(x="cost", y="gain").figure, size=6, caption = "This is a figure", new_row = True)
+r.add(df.plot(x="cost", y="gain"), size=6, caption = "This is a figure", new_row = True)
 
 r.set_col_cls("d-flex justify-content-center")
 
