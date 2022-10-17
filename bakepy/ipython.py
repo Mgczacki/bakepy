@@ -54,7 +54,7 @@ class BakeReportMagic(Magics):
     @argument('-C', '--container', default=None, type=strparse, help='The name of the container to use. If it does not exist, it is created.')
     @argument('-r', '--row', default=None, type=int, help='The row position to use. If none provided, uses the current row.')
     @argument('-c', '--col', default=None, type=int, help='The position to take in the row. If none provided, inserts at the end of the current row.')
-    @argument('-nr', '--new_row', default=False, type=boolparse, help='Whether to use the active row or create a new one.')
+    @argument('-nr', '--new_row', default=True, type=boolparse, help='Whether to use the active row or create a new one.')
     @argument('-nc', '--new_col', default=True, type=boolparse, help='Whether to use the active col or create a new one.')
     @argument('-s', '--size', default=None, type=int, help='The size of the column in the row.')
     @argument('-l', '--latex', default=False, type=boolparse, help='Whether to evaluate LaTeX expresions. Only valid if cell output is a string.')

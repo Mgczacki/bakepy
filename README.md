@@ -13,20 +13,21 @@ from bakepy import Report
 
 r = Report()
 
-r.add_special("markdown",
+r.recipe("title", "Example BakePy Report")
+
+r.recipe("markdown",
 f"""
-<h1 class="display-1"> An example BakePy report </h1>
 ### {dt.now().strftime("%Y-%m-%d")}
 """)
 
 r.set_col_cls("text-center")
 
-r.add_special("separator", new_row = True)
+r.recipe("separator", new_row = True)
 
 a = 4
 color = "blue"
 l = ["red", 3, False]
-r.add_special("markdown",
+r.recipe("markdown",
 f"""
 We can add markdown and use the power of Python to mix:
 
@@ -36,7 +37,7 @@ We can add markdown and use the power of Python to mix:
 """, new_row=True
 )
 
-r.add(<h2> See some examples below! </h2>)
+r.add("<h2> See some examples below! </h2>")
 
 r.add(
 """
@@ -46,16 +47,16 @@ For example, Pandas Dataframes and Matplotlib Figures
 #Adding a DataFrame in a new line.
 
 data = {
-  "cost": [420, 380, 390],
-  "speed": [50, 40, 45]
+  "cost": [10, 23, 40],
+  "gain": [20, 40, 45]
 }
 df = pd.DataFrame(data)
 
 r.add(df, caption = "This is a table", new_row = True)
 
-#Adding a plot.
+#Adding a plot on the same line.
 
-r.add(df.plot(x="cost", y="speed").figure, caption = "This is a figure", new_row = True)
+r.add(df.plot(x="cost", y="gain").figure, size=6, caption = "This is a figure", new_row = True)
 
 r.set_col_cls("d-flex justify-content-center")
 

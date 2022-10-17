@@ -99,28 +99,6 @@ class Body(HTMLElement):
                       <body>"""
     def get_tail(self):
         return "</body></html>"
-    
-    def to_html(self):
-        from bs4 import BeautifulSoup
-
-        soup = BeautifulSoup(super().to_html(), "html.parser")
-        return soup.prettify()
-
-    def save_html(self, filename = None):
-        from .utils import get_filename
-
-        name = self.name
-        
-        if name == "":
-            name = id(self)
-            
-        if filename is None:
-            filename = name
-            
-        filename = get_filename(filename, "html")
-
-        with open(filename, 'w') as f:
-            f.write(self.to_html())
             
 @dataclass
 class Container(HTMLElement):

@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 def as_list(i):
     if issubclass(type(i), str) or not isinstance(i, list):
         return [i]
@@ -37,3 +39,10 @@ def limit_list_insert_idx(idx, lst, overwrite = False):
         idx = 0
         
     return idx
+
+def check_is_url(s):
+    try:
+        result = urlparse(x)
+        return all([result.scheme, result.netloc])
+    except:
+        return False
