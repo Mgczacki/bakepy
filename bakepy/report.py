@@ -1,11 +1,18 @@
+import logging
+import mimetypes
+import base64
+import requests
+import os
+import warnings
+
 import copy as copy_lib
 
 from dataclasses import dataclass, field
 from typing import Any
-import logging
+from bs4 import BeautifulSoup
 
 from .html import Body, Container, Row, Column
-from .utils import as_list, get_filename, get_valid_list_idx, limit_list_insert_idx
+from .utils import as_list, get_filename, get_valid_list_idx, limit_list_insert_idx, check_is_url
 from .recipes import get_html
 
 @dataclass
@@ -15,11 +22,12 @@ class Report:
     """
     name : str = "BakePy_Report"
 
-    main_stylesheet: str = """<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">"""
+    main_stylesheet: str = """<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+                              <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">"""
     stylesheets: Any = field(default_factory=list)
 
     cont_default_styles: Any = field(default_factory=list)
-    cont_default_classes: Any = field(default_factory=list)
+    cont_default_classes: Any = field(default_factory=lambda:["pb-5"])
     row_default_styles: Any = field(default_factory=list)
     row_default_classes: Any = field(default_factory=lambda:["justify-content-center pb-5 gx-5"])
     col_default_styles: Any = field(default_factory=list)
@@ -662,7 +670,7 @@ class Report:
             container_name = None,
             row_idx = None,
             col_idx = None,
-            new_row = False,
+            new_row = True,
             new_col = True,
             size = None,
             copy = False,
@@ -681,7 +689,7 @@ class Report:
             The index of the row to insert at. If None, uses the current row.
         col_idx : int, default = None
             The index of the column to insert at. If None, inserts at the end of the row.
-        new_row : bool, default = False
+        new_row : bool, default = True
             If True, the elements will be added in a new row.
         new_col : bool, default = True
             If True, the elements will be added in a new column.
@@ -690,7 +698,7 @@ class Report:
         copy : bool, default = False
             If True, the elements will be copied before inserting.
         overwrite : bool, default = False
-            Set to true if overwriting the current styles.
+            Set to true if overwriting the item in the specified position.
         """
 
         elements = as_list(elements)
@@ -714,18 +722,18 @@ class Report:
             else:
                 col.add_element(e, **other_args)
         
-    def add_special(self,
-                    type,
-                    *args,
-                    container_name = None,
-                    row_idx = None,
-                    col_idx = None,
-                    new_row = False,
-                    new_col = True,
-                    size = None,
-                    copy = False,
-                    overwrite = False,
-                    **kwargs):
+    def recipe(self,
+               type,
+               *args,
+               container_name = None,
+               row_idx = None,
+               col_idx = None,
+               new_row = True,
+               new_col = True,
+               size = None,
+               copy = False,
+               overwrite = False,
+               **kwargs):
         """
         Add specially formatted content to the report.
 
@@ -739,7 +747,7 @@ class Report:
             The index of the row to insert at. If None, uses the current row.
         col_idx : int, default = None
             The index of the column to insert at. If None, inserts at the end of the row.
-        new_row : bool, default = False
+        new_row : bool, default = True
             If True, the elements will be added in a new row.
         new_col : bool, default = True
             If True, the elements will be added in a new column.
@@ -748,12 +756,12 @@ class Report:
         copy : bool, default = False
             If True, the elements will be copied before inserting.
         overwrite : bool, default = False
-            Set to true if overwriting the current styles.
+            Set to true if overwriting the item in the specified position.
         """
 
         self.add(get_html(type, *args, **kwargs), container_name, row_idx, col_idx, new_row, new_col, size, copy, overwrite)
-        
-    def save_html(self, filename = None):
+
+    def save_html(self, filename = None, embed_images=True, embed_links=True):
         """
         Save the report to an HTML file.
 
@@ -762,19 +770,38 @@ class Report:
         filename : str, default = None
             The path to save at. If None, uses the report name.
         """
-        self.body.save_html(filename)
 
-    def save_pdf(self, filename = None):
-        """
-        Save the report to an PDF file.
+        html = self.body.to_html()
+        soup = BeautifulSoup(html, "html.parser")
 
-        Parameters
-        ----------
-        filename : str, default = None
-            The path to save at. If None, uses the report name.
-        """
-        import weasyprint
+        #Embed images as base64
+        if embed_images:
+            for img in soup.find_all('img'):
+                img_src = img.attrs['src']
+                #If image is already embedded, skip.
+                if img_src.startswith('data:'):
+                    continue
+                #Get image type
+                img_type = mimetypes.guess_type(img_src)[0]
 
+                #Handle remote images.
+                if check_is_url(img_src):
+                    img_data = requests.get(img_src).content
+                else:
+                    with open(img_src, "rb") as file:
+                        img_data = file.read()
+                    if img_src.startswith("BAKEPY_IMG_"):
+                        try:
+                            os.remove(img_src)
+                        except:
+                            warnings.warn(f"Could not delete file {img_src}.") 
+
+                    
+                img.attrs['src'] = f"data:{img_type};base64,{str(base64.b64encode(img_data),'utf-8')}"
+        #Embed links (stylesheets) using bs4
+        #TODO
+
+        #Save the file
         name = self.name
         
         if name == "":
@@ -783,6 +810,30 @@ class Report:
         if filename is None:
             filename = name
             
-        filename = get_filename(filename, "pdf")
+        filename = get_filename(filename, "html")
+
+        with open(filename, 'w') as f:
+            f.write(soup.prettify())
+
+    # def save_pdf(self, filename = None):
+    #     """
+    #     Save the report to an PDF file.
+
+    #     Parameters
+    #     ----------
+    #     filename : str, default = None
+    #         The path to save at. If None, uses the report name.
+    #     """
+    #     import weasyprint
+
+    #     name = self.name
+        
+    #     if name == "":
+    #         name = id(self)
             
-        weasyprint.HTML(string=self.save_html()).write_pdf(filename)
+    #     if filename is None:
+    #         filename = name
+            
+    #     filename = get_filename(filename, "pdf")
+            
+    #     weasyprint.HTML(string=self.save_html(embed_images=True, embed_links=True)).write_pdf(filename)
