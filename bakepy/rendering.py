@@ -1,4 +1,7 @@
 import warnings
+import os
+
+from bs4 import BeautifulSoup
 
 from .html import HTMLElement
 
@@ -128,14 +131,14 @@ try:
 except:
     warnings.warn(f"Tried to register render function for pandas dataframes but it failed. Is the library installed?")
 
-#TODO: Implement embed.
-
 try:
     import matplotlib.pyplot as plt
+
+    from matplotlib.artist import Artist
     from matplotlib.figure import Figure
 
-    @register_html_renderer(cls=Figure)
-    def _get_matplotlib_html(fig, caption = None, save_format="svg", embed = False):
+    @register_html_renderer(cls=Artist)
+    def _get_matplotlib_html(fig, caption = None, save_format="svg"):
         """
         Rendering function for matplotlib figures.
         Parameters
@@ -149,26 +152,43 @@ try:
         embed: bool; default=False
             An option that allows the embedding of the image directly into the HTML document rather than in a separate file.
         Returns
-        ----------
+        -------
         repr: str
             An HTML string.
         """
+        if not isinstance(fig, Figure):
+            try:
+                fig = fig.figure
+            except:
+                raise Exception("The provided matplotlib object does not contain a Figure.")
+
         old_config = plt.rcParams['svg.fonttype']
         
-        filename = f"{id(fig)}.{save_format}"
+        filename = f"BAKEPY_IMG_{id(fig)}.{save_format}"
 
         plt.rcParams['svg.fonttype'] = 'none'
         fig.savefig(filename, format=save_format, bbox_inches='tight')
         
+        if save_format == "svg":
+            #Change the format of svg file to have max width/height
+            with open(filename,'r+') as file:
+                soup = BeautifulSoup(file, features="lxml-xml")
+                for svg_f in soup.find_all('svg'):
+                    svg_f.attrs["width"] = "100%"
+                    svg_f.attrs["height"] = "100%"
+                file.seek(0)
+                file.write(str(soup))
+                file.truncate()
+
         plt.rcParams['svg.fonttype'] = old_config
         
         str_caption = ""
 
         if caption is not None:
             str_caption = f"""<figcaption class="figure-caption text-center">{caption}</figcaption>"""
-        
-        return f"""<figure class="figure">
-                    <img src="{filename}" class="figure-img img-fluid" >
+
+        return f"""<figure class="figure" style="width:100%;">
+                    <img src="{filename}" class="figure-img img-fluid">
                     {str_caption}
                 </figure>"""
 

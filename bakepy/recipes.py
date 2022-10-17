@@ -1,7 +1,7 @@
 SPECIAL_FORMATS_DICT = dict()
 
 #Decorator to register an HTML rendering function
-def register_format(f_str):
+def register_recipe(f_str):
     """
     Decorator to register a function that generates specially formatted HTML.
     Parameters
@@ -33,12 +33,18 @@ def get_html(format_type, *args, **kwargs):
     """
     return SPECIAL_FORMATS_DICT[format_type](*args, **kwargs)
 
-@register_format("separator")
-def _get_separator(classes = ["py-4"], styling = [], visible = True):
-    
-    if not visible:
-        styling = styling + ["display:none;"]
+def get_recipes():
+    return SPECIAL_FORMATS_DICT.keys()
 
+def get_recipe_info(recipe):
+    try:
+        f = SPECIAL_FORMATS_DICT[recipe]
+    except:
+        raise Exception(f"{recipe} is not registered as a BakePy Recipe.")
+
+@register_recipe("separator")
+def _get_separator(classes = ["py-4"], styling = []):
+    
     cls_str = ""
     if len(classes) > 0:
         cls_str = f""" class="{" ".join(classes)}" """
@@ -48,16 +54,19 @@ def _get_separator(classes = ["py-4"], styling = [], visible = True):
         
     return f"""<hr{cls_str}{style_str}/>"""
     
-@register_format("markdown")
+@register_recipe("markdown")
 def _get_markdown(text, classes = [], styling = [], latex=False):
 
+    import markdown
+    extensions = []
+    extension_configs = {}
+
     if latex:
-        import mdtex2html
-        html = mdtex2html.convert(text)
-    else:
-        import markdown
-        html = markdown.markdown(text)
-            
+        extensions.append('markdown_katex')
+        extension_configs['markdown_katex'] = {'no_inline_svg': False, 'insert_fonts_css': False}
+        
+    html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
+        
     cls_str = ""
     if len(classes) > 0:
         cls_str = f""" class="{" ".join(classes)}" """
@@ -65,3 +74,17 @@ def _get_markdown(text, classes = [], styling = [], latex=False):
     if len(styling) > 0:
         style_str = f""" style="{" ".join(styling)}" """
     return f"""<div{cls_str}{style_str}>{html}</div>"""
+
+@register_recipe(f_str="title")
+def _get_title(text, display_level = 1, heading_level = 1, center = True):
+    
+    c_str = f"""class = "display-{display_level}"""
+    if center:
+        c_str = c_str + " text-center"
+    c_str = c_str + '"'
+    return f"<h{heading_level} {c_str}> {text} </h{heading_level}>"
+
+@register_recipe(f_str="spacer")
+def _get_spacer(level = 1):
+    
+    return f"""<div class="my-{level}" style="width: 100%;height: 1px;"></div>"""
