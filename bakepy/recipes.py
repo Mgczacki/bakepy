@@ -53,6 +53,19 @@ def _get_separator(classes = ["py-4"], styling = []):
         style_str = f""" style="{" ".join(styling)}" """
         
     return f"""<hr{cls_str}{style_str}/>"""
+
+@register_recipe("img")
+def _get_img(url, caption = None):
+
+    str_caption = ""
+
+    if caption is not None:
+        str_caption = f"""<figcaption class="figure-caption text-center">{caption}</figcaption>"""
+
+    return f"""<figure class="figure" style="width:100%;">
+                <img src="{url}" class="figure-img img-fluid">
+                {str_caption}
+            </figure>"""
     
 @register_recipe("markdown")
 def _get_markdown(text, classes = [], styling = [], latex=False):
