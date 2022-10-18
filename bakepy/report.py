@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 from .html import Body, Container, Row, Column
 from .utils import as_list, get_filename, get_valid_list_idx, limit_list_insert_idx, check_is_url
-from .recipes import get_html
+from .recipes import get_html, get_recipes, get_recipe_info
 
 @dataclass
 class Report:
@@ -27,9 +27,9 @@ class Report:
     stylesheets: Any = field(default_factory=list)
 
     cont_default_styles: Any = field(default_factory=list)
-    cont_default_classes: Any = field(default_factory=lambda:["pb-5"])
+    cont_default_classes: Any = field(default_factory=lambda:["my-5"])
     row_default_styles: Any = field(default_factory=list)
-    row_default_classes: Any = field(default_factory=lambda:["justify-content-center pb-5 gx-5"])
+    row_default_classes: Any = field(default_factory=lambda:["justify-content-center mb-5 gx-5"])
     col_default_styles: Any = field(default_factory=list)
     col_default_classes: Any = field(default_factory=list)
 
@@ -760,6 +760,25 @@ class Report:
         """
 
         self.add(get_html(type, *args, **kwargs), container_name, row_idx, col_idx, new_row, new_col, size, copy, overwrite)
+
+    @staticmethod
+    def get_recipes():
+        """
+        Get all available recipes.
+        """
+        return get_recipes()
+
+    @staticmethod
+    def get_recipe_info(recipe):
+        """
+        Get information about a recipe.
+
+        Parameters
+        ----------
+        recipe: str
+            The name of a recipe.
+        """
+        return get_recipe_info(recipe)
 
     def save_html(self, filename = None, embed_images=True, embed_links=True):
         """
