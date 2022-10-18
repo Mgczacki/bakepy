@@ -11,6 +11,7 @@ RENDER_FUNCTIONS_DICT = dict()
 def register_html_renderer(cls):
     """
     Decorator to register a function to render HTML from an object.
+
     Parameters
     ----------
     cls: type/class
@@ -29,6 +30,7 @@ def register_html_renderer(cls):
 def get_html(element, **options):
     """
     Renders an object to an HTML string.
+    
     Parameters
     ----------
     element: Object
@@ -51,6 +53,7 @@ def get_html(element, **options):
 def _default_html_conversion(element, **_options):
     """
     A default rendering function for any unimplemented types. Returns the object's string representation.
+
     Parameters
     ----------
     element: Object
@@ -69,6 +72,7 @@ def _default_html_conversion(element, **_options):
 def _get_str_html(element, **_options):
     """
     Rendering function for the string type. Returns the same object.
+
     Parameters
     ----------
     element: Object
@@ -86,6 +90,7 @@ def _get_str_html(element, **_options):
 def _get_htmlelement_html(element, **_options):
     """
     Rendering function for HTMLElement objects. Calls the object's to_html() function.
+
     Parameters
     ----------
     element: Object
@@ -108,6 +113,7 @@ try:
     def _get_pandas_html(df, caption = None, classes = ["table", "table-bordered"], justify = "left"):
         """
         Rendering function for pandas dataframes.
+
         Parameters
         ----------
         df: DataFrame
@@ -141,6 +147,7 @@ try:
     def _get_matplotlib_html(fig, caption = None, save_format="svg"):
         """
         Rendering function for matplotlib figures.
+
         Parameters
         ----------
         fig: Figure
