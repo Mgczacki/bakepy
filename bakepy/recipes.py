@@ -38,12 +38,22 @@ def get_recipes():
 
 def get_recipe_info(recipe):
     try:
-        f = SPECIAL_FORMATS_DICT[recipe]
+        return help(SPECIAL_FORMATS_DICT[recipe])
     except:
         raise Exception(f"{recipe} is not registered as a BakePy Recipe.")
 
 @register_recipe("separator")
 def _get_separator(classes = ["py-4"], styling = []):
+    """
+    Generates a horizontal rule meant as a separator.
+
+    Parameters
+    ----------
+    classes: list, default = ["py-4"]
+        The classes to apply to the element.
+    styling: list, default = []
+        The styles to apply to the element.
+    """
     
     cls_str = ""
     if len(classes) > 0:
@@ -56,7 +66,16 @@ def _get_separator(classes = ["py-4"], styling = []):
 
 @register_recipe("img")
 def _get_img(url, caption = None):
+    """
+    Adds an image from a path.
 
+    Parameters
+    ----------
+    url: str
+        The path (local or remote) to the image file.
+    caption: str, default = None
+        The caption for the image.
+    """
     str_caption = ""
 
     if caption is not None:
@@ -69,7 +88,20 @@ def _get_img(url, caption = None):
     
 @register_recipe("markdown")
 def _get_markdown(text, classes = [], styling = [], latex=False):
+    """
+    Generates a block of text with interpreted as markdown.
 
+    Parameters
+    ----------
+    text: str
+        The string to parse as markdown.
+    classes: list, default = []
+        The classes to apply to the element.
+    styling: list, default = []
+        The styles to apply to the element.
+    latex : bool, default = False
+        If True, parsing for LaTeX is enabled.
+    """
     import markdown
     extensions = []
     extension_configs = {}
@@ -89,15 +121,34 @@ def _get_markdown(text, classes = [], styling = [], latex=False):
     return f"""<div{cls_str}{style_str}>{html}</div>"""
 
 @register_recipe(f_str="title")
-def _get_title(text, display_level = 1, heading_level = 1, center = True):
-    
-    c_str = f"""class = "display-{display_level}"""
+def _get_title(text, level = 1, center = True):
+    """
+    Generates a title.
+
+    Parameters
+    ----------
+    text: str
+        The title contents.
+    level: int, default = 1
+        The Boostrap display-level.
+    center: bool, default = True
+        If True, centers the title horizontally.
+    """
+    c_str = f"""class = "display-{level}"""
     if center:
         c_str = c_str + " text-center"
     c_str = c_str + '"'
-    return f"<h{heading_level} {c_str}> {text} </h{heading_level}>"
+    return f"<h1 {c_str}> {text} </h1>"
 
 @register_recipe(f_str="spacer")
 def _get_spacer(level = 1):
+    """
+    Generates blank space.
+
+    Parameters
+    ----------
+    level: int, default = 1
+        The Boostrap margin size to apply to the spacer.
+    """
     
     return f"""<div class="my-{level}" style="width: 100%;height: 1px;"></div>"""
