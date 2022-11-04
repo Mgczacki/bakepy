@@ -103,6 +103,8 @@ def _get_markdown(text, classes = [], styling = [], latex=False):
         If True, parsing for LaTeX is enabled.
     """
     import markdown
+    from textwrap import dedent
+
     extensions = []
     extension_configs = {}
 
@@ -110,7 +112,7 @@ def _get_markdown(text, classes = [], styling = [], latex=False):
         extensions.append('markdown_katex')
         extension_configs['markdown_katex'] = {'no_inline_svg': False, 'insert_fonts_css': False}
         
-    html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
+    html = markdown.markdown(dedent(text), extensions=extensions, extension_configs=extension_configs)
         
     cls_str = ""
     if len(classes) > 0:

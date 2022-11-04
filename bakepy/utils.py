@@ -1,3 +1,8 @@
+import os
+import mimetypes
+import requests
+
+from pathlib import Path
 from urllib.parse import urlparse
 
 def as_list(i):
@@ -46,3 +51,26 @@ def check_is_url(s):
         return all([result.scheme, result.netloc])
     except:
         return False
+
+def get_image_data(path):
+    #Get image type
+    img_type = mimetypes.guess_type(path)[0]
+
+    #Handle remote images.
+    if check_is_url(path):
+        img_data = requests.get(path).content
+    else:
+        with open(path, "rb") as file:
+            img_data = file.read()
+
+    return img_type, img_data
+
+class Working_Directory():
+    def __init__(self, dirpath):
+        self.dirpath = dirpath
+        self.prevpath = Path.cwd()
+    def __enter__(self):
+        os.chdir(self.dirpath)
+        return self.dirpath
+    def __exit__(self, type, value, traceback):
+        os.chdir(self.prevpath)
