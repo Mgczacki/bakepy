@@ -1,9 +1,13 @@
 import warnings
 import os
+import base64
+
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 
 from .html import HTMLElement
+from .utils import get_image_data
 
 RENDER_FUNCTIONS_DICT = dict()
 
@@ -27,6 +31,33 @@ def register_html_renderer(cls):
         return f
     return registration
 
+def get_render_function(element, verbose = False):
+    """
+    Obtains the associated function to render an object.
+    """
+    inheritance = type(element).__mro__
+    #Tries to find a function for each type in the inheritance order of the object.
+    for i in inheritance:
+        if i in RENDER_FUNCTIONS_DICT:
+            if verbose:
+                print(f"Found a renderer for the type {i}.")
+            return RENDER_FUNCTIONS_DICT[i]
+        else:
+            if verbose:
+                print(f"Found no associated renderer for the type {i}.")
+    if verbose:
+        print(f"Found no associated renderer for the inheritance. Returning default rendering function.")
+    return _default_html_conversion
+
+def get_renderers():
+    return RENDER_FUNCTIONS_DICT.keys()
+
+def get_renderer_info(element, verbose = False):
+    try:
+        return help(get_render_function(element, verbose))
+    except:
+        raise Exception("The element has no valid associated renderer.")
+
 def get_html(element, **options):
     """
     Renders an object to an HTML string.
@@ -42,12 +73,7 @@ def get_html(element, **options):
     repr: str
         An HTML string.
     """
-    inheritance = type(element).__mro__
-    #Tries to find a function for each type in the inheritance order of the object.
-    for i in inheritance:
-        if i in RENDER_FUNCTIONS_DICT:
-            return RENDER_FUNCTIONS_DICT[i](element, **options)
-    return _default_html_conversion(element, **options)
+    return get_render_function(element)(element, **options)
 
 @register_html_renderer(cls=object)
 def _default_html_conversion(element, **_options):
@@ -110,7 +136,7 @@ try:
     from pandas import DataFrame
 
     @register_html_renderer(cls=DataFrame)
-    def _get_pandas_html(df, caption = None, classes = ["table", "table-bordered"], justify = "left"):
+    def _get_pandas_html(df, caption = None, classes = ["table", "table-bordered"], justify = "left", index=True, **options):
         """
         Rendering function for pandas dataframes.
 
@@ -118,18 +144,20 @@ try:
         ----------
         df: DataFrame
             The dataframe to render.
-        caption: str; default = None
+        caption: str, default = None
             The table's caption.
-        classes: list; default = ["table", "table-bordered"]
+        classes: list, default = ["table", "table-bordered"]
             A list of classes to apply to the HTML table generated.
-        justift: str; default="left"
+        justify: str, default="left"
             The justification for the table's text.
+        index: bool, default=True
+            If True, adds the index to the HTML render of the dataframe.
         Returns
         ----------
         repr: str
             An HTML string.
         """
-        html = df.to_html(index=False, classes = classes, justify=justify)
+        html = df.to_html(index=index, classes = classes, justify=justify, **options)
         if caption is not None:
             html = html.replace("</thead>", f"""</thead>\n  <caption class="text-center">{caption}</caption>""")
         return html
@@ -144,7 +172,7 @@ try:
     from matplotlib.figure import Figure
 
     @register_html_renderer(cls=Artist)
-    def _get_matplotlib_html(fig, caption = None, save_format="svg"):
+    def _get_matplotlib_html(fig, caption = None, save_format="svg", embed = True, **options):
         """
         Rendering function for matplotlib figures.
 
@@ -152,11 +180,11 @@ try:
         ----------
         fig: Figure
             The figure to render.
-        caption: str; default = None
+        caption: str, default = None
             The figure's caption.
-        save_format: str; default="svg"
+        save_format: str, default="svg"
             The save format for the output image.
-        embed: bool; default=False
+        embed: bool, default=True
             An option that allows the embedding of the image directly into the HTML document rather than in a separate file.
         Returns
         -------
@@ -174,7 +202,7 @@ try:
         filename = f"BAKEPY_IMG_{id(fig)}.{save_format}"
 
         plt.rcParams['svg.fonttype'] = 'none'
-        fig.savefig(filename, format=save_format, bbox_inches='tight')
+        fig.savefig(filename, format=save_format, bbox_inches='tight', **options)
         
         if save_format == "svg":
             #Change the format of svg file to have max width/height
@@ -194,8 +222,18 @@ try:
         if caption is not None:
             str_caption = f"""<figcaption class="figure-caption text-center">{caption}</figcaption>"""
 
+        if embed:
+            img_type, img_data = get_image_data(filename)                   
+            img_src = f"data:{img_type};base64,{str(base64.b64encode(img_data),'utf-8')}"
+            try:
+                os.remove(filename)
+            except:
+                warnings.warn(f"Could not delete file {filename}.") 
+        else:
+            img_src = filename
+
         return f"""<figure class="figure" style="width:100%;">
-                    <img src="{filename}" class="figure-img img-fluid">
+                    <img src="{img_src}" class="figure-img img-fluid">
                     {str_caption}
                 </figure>"""
 
