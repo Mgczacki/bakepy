@@ -11,8 +11,9 @@ def as_list(i):
     return i
 
 def get_filename(filepath, extension):
-    if not filepath.endswith(f".{extension}"):
-        return filepath+f".{extension}"
+    filepath = Path(filepath)
+    if filepath.suffix != f".{extension}":
+        return filepath / f".{extension}"
     return filepath
 
 def get_valid_list_idx(original_idx, lst, listname = "list"):        
