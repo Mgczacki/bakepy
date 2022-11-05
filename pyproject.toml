@@ -1,7 +1,5 @@
 [build-system]
-requires = [
-    "hatchling>=1.10.0",
-]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
@@ -11,9 +9,21 @@ dynamic = [
 ]
 description = "BakePy Reporting Library"
 readme = "README.md"
+requires-python = ">=3.7"
 license = "MIT"
 authors = [
     { name = "Mario Garrido", email = "mg@czacki.com" }
+]
+dependencies = [
+    "beautifulsoup4==4.11.1",
+    "Markdown==3.3.6",
+    "markdown_katex==202112.1034",
+    "requests==2.26.0",
+]
+[project.optional-dependencies]
+complete = [
+    "pandas",
+    "matplotlib"
 ]
 
 [project.urls]
@@ -22,7 +32,32 @@ authors = [
 [tool.hatch.version]
 path = "bakepy/__about__.py"
 
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov"
+]
 
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=bakepy --cov=tests"
+no-cov = "cov --no-cov"
+
+[[tool.hatch.envs.default.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "hatch_init/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
 
 [tool.hatch.build.targets.sdist]
 exclude = [

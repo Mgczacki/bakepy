@@ -21,7 +21,7 @@ def register_html_renderer(cls):
     cls: type/class
         The type/class to assign for the rendering function.
     Example
-    ----------
+    -------
     @register_html_renderer(cls=int)
     def _get_int_html(element, **_options):
         return str(element)
@@ -69,7 +69,7 @@ def get_html(element, **options):
     options: dict
         An optional dictionary containing keyword arguments to be used by the rendering functon.
     Returns
-    ----------
+    -------
     repr: str
         An HTML string.
     """
@@ -87,7 +87,7 @@ def _default_html_conversion(element, **_options):
     _options: dict
         Unused. Kept for compatibility with get_html()
     Returns
-    ----------
+    -------
     repr: str
         An HTML string.
     """
@@ -106,7 +106,7 @@ def _get_str_html(element, **_options):
     _options: dict
         Unused. Kept for compatibility with get_html()
     Returns
-    ----------
+    -------
     repr: str
         An HTML string.
     """
@@ -124,7 +124,7 @@ def _get_htmlelement_html(element, **_options):
     _options: dict
         Unused. Kept for compatibility with get_html()
     Returns
-    ----------
+    -------
     repr: str
         An HTML string.
     """
@@ -152,8 +152,10 @@ try:
             The justification for the table's text.
         index: bool, default=True
             If True, adds the index to the HTML render of the dataframe.
+        options: dict
+            An optional dictionary containing other keyword arguments used by df.to_html()
         Returns
-        ----------
+        -------
         repr: str
             An HTML string.
         """
@@ -186,6 +188,8 @@ try:
             The save format for the output image.
         embed: bool, default=True
             An option that allows the embedding of the image directly into the HTML document rather than in a separate file.
+        options: dict
+            An optional dictionary containing other keyword arguments used by fig.savefig()
         Returns
         -------
         repr: str

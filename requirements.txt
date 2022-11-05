@@ -1,5 +1,0 @@
-beautifulsoup4==4.11.1
-Markdown==3.3.6
-markdown_katex==202112.1034
-requests==2.26.0
-
