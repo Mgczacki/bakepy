@@ -16,17 +16,26 @@ from .utils import as_list, get_filename, get_valid_list_idx, limit_list_insert_
 from .recipes import get_html, get_recipes, get_recipe_info
 from .rendering import get_renderers, get_renderer_info
 
+# Defaults
+
+DEFAULT_NAME = "BakePy_Report"
+DEFAULT_MAIN_STYLESHEET = """<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">"""
+DEFAULT_STYLESHEETS = ["""<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">"""]
+
 
 @dataclass
 class Report:
     """
     The report class is a collection of containers. A custom interface for a HTML Body.
     """
-    name : str = "BakePy_Report"
+    name : str = DEFAULT_NAME
+    _name: int = field(init=False, repr=False)
 
-    main_stylesheet: str = """<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-                              <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.min.css" integrity="sha384-bYdxxUwYipFNohQlHt0bjN/LCpueqWz13HufFEV1SUatKs1cm4L6fFgCi1jT643X" crossorigin="anonymous">"""
-    stylesheets: Any = field(default_factory=list)
+    main_stylesheet: str = DEFAULT_MAIN_STYLESHEET
+    _main_stylesheet: int = field(init=False, repr=False)
+
+    stylesheets: Any = DEFAULT_STYLESHEETS
+    _stylesheets: int = field(init=False, repr=False)
 
     cont_default_styles: Any = field(default_factory=list)
     cont_default_classes: Any = field(default_factory=lambda:["my-5"])
@@ -44,9 +53,46 @@ class Report:
 
     containers: Any = field(default_factory=dict)
         
-    body : Body = None
+    body : Body = field(init=False)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def main_stylesheet(self) -> str:
+        return self._main_stylesheet
+
+    @property
+    def stylesheets(self) -> Any:
+        return self._stylesheets
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        if hasattr(self, 'body'):
+            self.body.name = name
+    
+    @main_stylesheet.setter
+    def main_stylesheet(self, main_stylesheet):
+        self._main_stylesheet = main_stylesheet
+        if hasattr(self, 'body'):
+            self.body.main_stylesheet = main_stylesheet
+
+    @stylesheets.setter
+    def stylesheets(self, stylesheets):
+        self._stylesheets = stylesheets
+        if hasattr(self, 'body'):
+            self.body.stylesheets = stylesheets
 
     def __post_init__(self):
+        if type(self.name) is property:
+            self.name = DEFAULT_NAME
+        if type(self.main_stylesheet) is property:
+            self.main_stylesheet = DEFAULT_MAIN_STYLESHEET
+        if type(self.stylesheets) is property:
+            self.stylesheets = DEFAULT_STYLESHEETS.copy()
+
         self.body = Body(name=self.name, main_stylesheet=self.main_stylesheet, stylesheets=self.stylesheets)
 
     def _kwargs_defaults(self, kwargs, key, val):
@@ -149,7 +195,6 @@ class Report:
             self.current_col_idx = None
             if len(self.containers) == 0:
                 self.current_container_name = None
-                #Nothing left to do
                 return
             else:
                 self.current_container_name = list(self.containers)[-1]

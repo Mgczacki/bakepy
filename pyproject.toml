@@ -35,7 +35,11 @@ path = "bakepy/__about__.py"
 [tool.hatch.envs.default]
 dependencies = [
   "pytest",
-  "pytest-cov"
+  "pytest-cov",
+  "notebook",
+  "pandas",
+  "matplotlib",
+  "lxml"
 ]
 
 [tool.hatch.envs.default.scripts]
