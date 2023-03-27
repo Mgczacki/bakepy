@@ -47,6 +47,7 @@ def idparse(val):
 
 @magics_class
 class BakeReportMagic(Magics):
+
     #Add things to the report
     @needs_local_scope
     @magic_arguments()
@@ -57,11 +58,17 @@ class BakeReportMagic(Magics):
     @argument('-nr', '--new_row', default=True, type=boolparse, help='Whether to use the active row or create a new one.')
     @argument('-nc', '--new_col', default=True, type=boolparse, help='Whether to use the active col or create a new one.')
     @argument('-s', '--size', default=None, type=int, help='The size of the column in the row.')
+    @argument('-S', '--special', default=None, type=boolparse, help='Whether to use a special format (recipe) for the input or not. If None, it defaults to True for string inputs and False for any other type.')
+    @argument('-t', '--recipe', default="markdown", type=str, help='The recipe to use for the input.')
+    @argument('-a', '--args', default={}, type=dictparse, help='Dictionary of arguments to pass to recipe.')
+    @argument('-o', '--overwrite', default=False, type=boolparse, help='Whether to overwrite the given column. Only valid if col is not None.')
+    @argument('-cp', '--copy', default=False, type=boolparse, help='Whether to copy the input object before inserting to the report.')
+    
     @argument('-l', '--latex', default=False, type=boolparse, help='Whether to evaluate LaTeX expresions. Only valid if cell output is a string.')
     @argument('-h', '--html', default=False, type=boolparse, help='Whether to  evaluate input as raw HTML rather than markdown. Only valid if cell output is a string.')
     @argument('-cap', '--caption', default=None, type=strparse, help='Caption for a DataFrame or Figure.')
-    @argument('-o', '--overwrite', default=False, type=boolparse, help='Whether to overwrite the given column. Only valid if col is not None.')
-    @argument('-cp', '--copy', default=False, type=boolparse, help='Whether to copy the input object before inserting to the report.')
+    
+    
     @line_cell_magic
     def bake(self, line, cell=None, local_ns=None):
         """
